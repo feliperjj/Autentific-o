@@ -10,6 +10,7 @@ const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const app = express();
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const { google } = require('googleapis');
 const findOrCreate = require("mongoose-findorcreate");
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -66,7 +67,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.SECRET,
-      callbackURL: "http://localhost:3000/auth/google/secrets",
+      callbackURL: "http://localhost:3000/auth/google/secrets"
     },
     function (accessToken, refreshToken, profile, cb) {
       user.findOrCreate({ googleId: profile.id }, function (err, user) {
@@ -133,11 +134,15 @@ app.get("/submit",function(req,res){
     res.redirect("/login");
   }
 })
-app.get("/logout", function (req, res) {
-  req.logout();
-  res.redirect("/");
-});
-
+app
+    .route('/logout')
+    .get((req, res) => {
+          req.logout(function(err) {
+               if (err) { return next(err); }
+           res.redirect('/');
+      });
+  });
+  
 app.post("/submit",function(req,res){
 const submittedSecret = req.body.secret;
 
