@@ -103,19 +103,18 @@ app.get("/register", function (req, res) {
 });
 
 app.get("/secrets", function (req, res) {
-  if (req.isAuthenticated()) {
-    user.find({ secret: { $ne: null } }, function (err, foundUsers) {
-      if (err) {
-        console.log(err);
-      } else {
-        if (foundUsers) {
-          res.render("secrets", { usersWithSecrets: foundUsers });
-        }
-      }
-    });
-  } else {
-    res.redirect("/login");
+ user.find({"secret":{$ne:null}},function(err,foundUsers){
+
+if(err){
+
+  console.log(err)
+}else{
+  if(foundUsers){
+    res.render("secrets",{usersWithSecrets:foundUsers})
   }
+}
+
+ })
 });
 
 app.get("/submit",function(req,res){
